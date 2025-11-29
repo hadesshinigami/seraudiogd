@@ -136,7 +136,7 @@ async function uploadToDrive(blob, filename, metadataObj) {
     formData.append("file", blob, filename);
     formData.append("metadata", JSON.stringify(metadataObj));
 
-    const driveURL = "https://script.google.com/macros/s/AKfycbygPBm8ggPaur11CNGeAlp1mhxfPaIyY9puKPChNrMN425c76ZnYBGCKxOqnr_bxw/exec";  
+    const driveURL = "https://script.google.com/macros/s/AKfycbzD7IkDSw1hMl0IFpCIx2Ajw25M7ClrzZBSLOx7KP0Mjvs9xNU61JH7zF6WHEEcHJMB/exec";  
 
     const response = await fetch(driveURL, {
         method: "POST",
@@ -309,5 +309,6 @@ document.getElementById("resetCSV").onclick = () => {
 
 </body>
 </html>
+
 
 
