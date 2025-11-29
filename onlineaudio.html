@@ -196,12 +196,19 @@ document.getElementById("startBtn").onclick = async () => {
         audioPlayer.classList.remove("hidden");
 
         /* COLLECT METADATA */
-        const pid = participantID.value.trim();
-        const age = age.value.trim();
-        const gender = gender.value.trim();
-        const country = country.value.trim();
-        const sentence = sentence.value.trim();
-        const emotion = emotion.value.trim();
+        const pid = document.getElementById("participantID").value.trim();
+        const ageVal = document.getElementById("age").value.trim();
+        const genderVal = document.getElementById("gender").value.trim();
+        const countryVal = document.getElementById("country").value.trim();
+        const sentenceVal = document.getElementById("sentence").value.trim();
+        const emotionVal = document.getElementById("emotion").value.trim();
+
+        const age = ageVal;
+        const gender = genderVal;
+        const country = countryVal;
+        const sentence = sentenceVal;
+        const emotion = emotionVal;
+
 
         const timestamp = new Date().toISOString();
 
@@ -309,6 +316,7 @@ document.getElementById("resetCSV").onclick = () => {
 
 </body>
 </html>
+
 
 
 
