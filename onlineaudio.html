@@ -130,22 +130,36 @@ fetch("https://api.ipify.org?format=json")
 /* ===========================================================
    UPLOAD TO GOOGLE DRIVE
 =========================================================== */
+async function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
 async function uploadToDrive(blob, filename, metadataObj) {
+    const base64File = await blobToBase64(blob);
 
-    const formData = new FormData();
-    formData.append("file", blob, filename);
-    formData.append("metadata", JSON.stringify(metadataObj));
+    const payload = {
+        fileData: base64File,
+        filename: filename,
+        metadata: metadataObj
+    };
 
-    const driveURL = "https://script.google.com/macros/s/AKfycbzD7IkDSw1hMl0IFpCIx2Ajw25M7ClrzZBSLOx7KP0Mjvs9xNU61JH7zF6WHEEcHJMB/exec";  
-
-    const response = await fetch(driveURL, {
+    const response = await fetch("PASTE_WEB_APP_URL", {
         method: "POST",
-        body: formData
+        body: JSON.stringify(payload),
+        headers: {
+            "Content-Type": "application/json"
+        }
     });
 
     const result = await response.json();
-    console.log("Uploaded to Drive:", result);
+    console.log(result);
 }
+
 
 
 /* ===========================================================
@@ -316,6 +330,7 @@ document.getElementById("resetCSV").onclick = () => {
 
 </body>
 </html>
+
 
 
 
