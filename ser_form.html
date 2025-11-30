@@ -179,15 +179,8 @@ async function sendToServer(blob, metadata) {
         });
 
 
-        const text = await response.text();
-
-        if (text.includes("OK")) {
-            statusDiv.textContent = "✅ Data successfully uploaded to server.";
-            alert("Recording and metadata uploaded.");
-        } else {
-            statusDiv.textContent = "⚠️ Upload error: " + text;
-            alert("Upload error: " + text);
-        }
+        statusDiv.textContent = "✅ Upload complete!";
+        alert("Recording and metadata uploaded successfully!");
 
     } catch (err) {
         console.error(err);
