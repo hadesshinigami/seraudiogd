@@ -169,18 +169,18 @@ async function sendToServer(blob, metadata) {
             ip_address: clientIP
         };
 
-        const response = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: "POST",
-            mode: "no-cors",        // ← WAJIB TAMBAHKAN
+            mode: "no-cors",
             headers: {
-            "Content-Type": "application/json"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(payload)
         });
 
-
         statusDiv.textContent = "✅ Upload complete!";
         alert("Recording and metadata uploaded successfully!");
+
 
     } catch (err) {
         console.error(err);
