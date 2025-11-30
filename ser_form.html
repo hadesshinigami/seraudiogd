@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion Voice Recorder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
+
+    <h2 class="text-3xl font-bold text-center mb-6 text-indigo-600">
+        🎤 Emotion Voice Recorder
+    </h2>
+
+    <p class="text-sm text-gray-500 mb-4">
+        Rekaman suara dan metadata (termasuk IP publik) akan dikirim otomatis ke server penelitian.
+    </p>
+
+    <!-- PARTICIPANT ID -->
+    <label class="font-semibold text-gray-700">Participant ID:</label>
+    <input id="participantID" type="text"
+           class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4"
+           placeholder="Enter your participant ID">
+
+    <!-- AGE -->
+    <label class="font-semibold text-gray-700">Age:</label>
+    <input id="age" type="number" min="1"
+           class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4"
+           placeholder="example: 25">
+
+    <!-- GENDER -->
+    <label class="font-semibold text-gray-700">Gender:</label>
+    <select id="gender"
+            class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4">
+        <option value="">-- Select Gender --</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select>
+
+    <!-- COUNTRY -->
+    <label class="font-semibold text-gray-700">Country:</label>
+    <select id="country"
+            class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4">
+        <option value="">-- Select Country --</option>
+        <option value="Japan">Japan</option>
+        <option value="Indonesia">Indonesia</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <!-- SENTENCE -->
+    <label class="font-semibold text-gray-700">Sentence to Speak:</label>
+    <select id="sentence"
+            class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4">
+        <option value="">-- Select Sentence --</option>
+
+        <!-- INDONESIAN -->
+        <option value="Hari ini hari sabtu.">1. Hari ini hari sabtu.</option>
+        <option value="Saya sedang berbelanja.">2. Saya sedang berbelanja.</option>
+        <option value="Saya berada di perpustakaan.">3. Saya berada di perpustakaan.</option>
+        <option value="Di luar sedang turun hujan.">4. Di luar sedang turun hujan.</option>
+        <option value="Saya sedang duduk di dalam ruangan.">5. Saya sedang duduk di dalam ruangan.</option>
+
+        <!-- JAPANESE -->
+        <option value="今日は土曜日です。">1. 今日は土曜日です。</option>
+        <option value="私は買い物をしています。">2. 私は買い物をしています。</option>
+        <option value="私は図書館にいます。">3. 私は図書館にいます。</option>
+        <option value="外は雨が降っています。">4. 外は雨が降っています。</option>
+        <option value="私は部屋に座っています。">5. 私は部屋に座っています。</option>
+    </select>
+
+    <!-- EMOTION -->
+    <label class="font-semibold text-gray-700">Select Emotion:</label>
+    <select id="emotion"
+            class="w-full p-3 rounded-lg border mt-1 mb-6 border-gray-300">
+        <option value="">-- Select Emotion --</option>
+        <option value="happy">Happy</option>
+        <option value="angry">Angry</option>
+        <option value="sad">Sad</option>
+        <option value="relaxed">Relaxed</option>
+    </select>
+
+    <!-- BUTTONS -->
+    <div class="flex justify-center space-x-6 mb-6">
+        <button id="startBtn"
+                class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full text-xl shadow-md transition">
+            🔴 Record
+        </button>
+
+        <button id="stopBtn"
+                class="bg-gray-400 text-white px-6 py-3 rounded-full text-xl shadow-md cursor-not-allowed"
+                disabled>
+            ⏹ Stop
+        </button>
+    </div>
+
+    <!-- AUDIO PREVIEW -->
+    <audio id="audio" controls class="w-full mb-4 hidden"></audio>
+
+    <!-- STATUS -->
+    <div id="status" class="text-sm text-gray-600 mt-2"></div>
+
+</div>
+
+<script>
+/* ============================================
+   GLOBAL VARIABLES
+============================================ */
+let mediaRecorder;
+let audioChunks = [];
+let clientIP = "unknown";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxROMqiftq7K1LWy4hou5x4eOtE0X-jUkYH7pa4FPQZnV5b1rUTJOHLc22f2_ribgnn/exec"; // <-- GANTI
+
+/* ============================================
+   AMBIL IP ADDRESS (PUBLIC)
+============================================ */
+fetch("https://api.ipify.org?format=json")
+  .then(res => res.json())
+  .then(data => {
+      clientIP = data.ip || "unknown";
+  })
+  .catch(err => {
+      console.error("IP fetch error:", err);
+      clientIP = "unknown";
+  });
+
+/* ============================================
+   HELPER: BLOB → BASE64
+============================================ */
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64Data = reader.result.split(",")[1];
+            resolve(base64Data);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+/* ============================================
+   VALIDATION
+============================================ */
+function validateInputs() {
+    const fields = ["participantID", "age", "gender", "country", "sentence", "emotion"];
+    for (let id of fields) {
+        if (document.getElementById(id).value.trim() === "") {
+            alert("Please fill in all fields before recording.");
+            return false;
+        }
+    }
+    return true;
+}
+
+/* ============================================
+   SEND TO SERVER (Apps Script)
+============================================ */
+async function sendToServer(blob, metadata) {
+    const statusDiv = document.getElementById("status");
+    try {
+        statusDiv.textContent = "Uploading audio and metadata...";
+        const audioBase64 = await blobToBase64(blob);
+
+        const payload = {
+            ...metadata,
+            audioBase64: audioBase64,
+            ip_address: clientIP
+        };
+
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const text = await response.text();
+
+        if (text.includes("OK")) {
+            statusDiv.textContent = "✅ Data successfully uploaded to server.";
+            alert("Recording and metadata uploaded.");
+        } else {
+            statusDiv.textContent = "⚠️ Upload error: " + text;
+            alert("Upload error: " + text);
+        }
+
+    } catch (err) {
+        console.error(err);
+        statusDiv.textContent = "❌ Upload failed.";
+        alert("Upload failed: " + err);
+    }
+}
+
+/* ============================================
+   START RECORDING
+============================================ */
+document.getElementById("startBtn").onclick = async () => {
+
+    if (!validateInputs()) return;
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+        mediaRecorder.onstop = async () => {
+            const blob = new Blob(audioChunks, { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+
+            const audioPlayer = document.getElementById("audio");
+            audioPlayer.src = url;
+            audioPlayer.classList.remove("hidden");
+
+            const pid = document.getElementById("participantID").value.trim();
+            const age = document.getElementById("age").value.trim();
+            const gender = document.getElementById("gender").value.trim();
+            const country = document.getElementById("country").value.trim();
+            const sentence = document.getElementById("sentence").value.trim();
+            const emotion = document.getElementById("emotion").value.trim();
+
+            const timestamp = new Date().toISOString();
+
+            const cleanSentence = sentence.replace(/^\d+\.\s*/, "");
+            const safe = cleanSentence
+                .replace(/[\/\\:*?"<>|]/g, "")
+                .replace(/\s+/g, "-");
+
+            const filename = `${pid}-${age}-${gender}-${country}-${emotion}-${safe}.wav`;
+
+            const metadata = {
+                participant_id: pid,
+                age: age,
+                gender: gender,
+                country: country,
+                emotion: emotion,
+                sentence: sentence,
+                filename: filename,
+                timestamp: timestamp
+            };
+
+            await sendToServer(blob, metadata);
+        };
+
+        // UPDATE UI
+        document.getElementById("startBtn").disabled = true;
+        document.getElementById("stopBtn").disabled = false;
+        document.getElementById("startBtn").classList.add("bg-gray-400");
+        document.getElementById("stopBtn").classList.add("bg-indigo-500");
+
+    } catch (err) {
+        alert("Mic permission error: " + err);
+        console.error(err);
+    }
+};
+
+/* ============================================
+   STOP RECORDING
+============================================ */
+document.getElementById("stopBtn").onclick = () => {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+    }
+
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("stopBtn").disabled = true;
+
+    document.getElementById("startBtn").classList.remove("bg-gray-400");
+    document.getElementById("startBtn").classList.add("bg-red-500");
+
+    document.getElementById("stopBtn").classList.add("bg-gray-400", "cursor-not-allowed");
+};
+</script>
+
+</body>
+</html>
