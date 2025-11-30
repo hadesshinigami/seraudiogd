@@ -225,8 +225,10 @@ document.getElementById("startBtn").onclick = async () => {
             const safe = cleanSentence
                 .replace(/[\/\\:*?"<>|]/g, "")
                 .replace(/\s+/g, "-");
-
-            const filename = `${pid}-${age}-${gender}-${country}-${emotion}-${safe}.wav`;
+            
+            const safeIP = clientIP.replace(/\./g, "_");
+            
+            const filename = `${pid}-${safeIP}-${age}-${gender}-${country}-${emotion}-${safe}.wav`;
 
             const metadata = {
                 participant_id: pid,
