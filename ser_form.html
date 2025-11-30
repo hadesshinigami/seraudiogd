@@ -171,11 +171,13 @@ async function sendToServer(blob, metadata) {
 
         const response = await fetch(SCRIPT_URL, {
             method: "POST",
+            mode: "no-cors",        // ← WAJIB TAMBAHKAN
             headers: {
-                "Content-Type": "application/json"
+            "Content-Type": "application/json"
             },
             body: JSON.stringify(payload)
         });
+
 
         const text = await response.text();
 
