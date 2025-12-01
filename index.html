@@ -14,6 +14,22 @@
         🎤 Emotion Voice Recorder
     </h2>
 
+    <div class="mb-4">
+      <button id="toggleGuide"
+          class="text-indigo-600 underline font-semibold mb-2">
+          How to use this app?
+      </button>
+    
+      <div id="guideContent" class="hidden text-gray-700 text-sm space-y-2">
+         <p>Each participant must record 10 sentences × 4 emotions × 2 repetitions = 80 total utterances.</p>
+         <p>1. Fill in all fields below.</p>
+         <p>2. Read and agree to the consent.</p>
+         <p>3. Select a sentence and emotion.</p>
+         <p>4. Press “Record”, speak clearly, then press “Stop”.</p>
+         <p>5. Repeat until all recordings are completed.</p>
+      </div>
+    </div>
+
     <!-- PARTICIPANT ID -->
     <label class="font-semibold text-gray-700">Participant ID:</label>
     <input id="participantID" type="text"
@@ -148,6 +164,10 @@
 </div>
 
 <script>
+
+document.getElementById("toggleGuide").onclick = () => {
+    document.getElementById("guideContent").classList.toggle("hidden");
+};
 
 /* ============================================
    CONSENT CHECKBOX CONTROL
