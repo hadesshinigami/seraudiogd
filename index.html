@@ -6,11 +6,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
 
 <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
 
-    <h2 class="text-3xl font-bold text-center mb-6 text-indigo-600">
+    <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-indigo-600">
         🎤 Emotion Voice Recorder
     </h2>
 
@@ -33,19 +33,19 @@
     <!-- PARTICIPANT ID -->
     <label class="font-semibold text-gray-700">Participant ID:</label>
     <input id="participantID" type="text"
-           class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4"
+           class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1"
            placeholder="Enter your participant ID">
 
     <!-- AGE -->
     <label class="font-semibold text-gray-700">Age:</label>
     <input id="age" type="number" min="1"
-           class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4"
+           class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1"
            placeholder="example: 25">
 
     <!-- GENDER -->
     <label class="font-semibold text-gray-700">Gender:</label>
     <select id="gender"
-            class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4">
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
         <option value="">-- Select Gender --</option>
         <option value="male">Male</option>
         <option value="female">Female</option>
@@ -54,7 +54,7 @@
     <!-- COUNTRY -->
     <label class="font-semibold text-gray-700">Country:</label>
     <select id="country"
-            class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4">
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
         <option value="">-- Select Country --</option>
         <option value="Japan">Japan</option>
         <option value="Indonesia">Indonesia</option>
@@ -64,7 +64,7 @@
     <!-- SENTENCE -->
     <label class="font-semibold text-gray-700">Sentence to Speak:</label>
     <select id="sentence"
-            class="w-full p-3 rounded-lg border border-gray-300 mt-1 mb-4">
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
         <option value="">-- Select Sentence --</option>
 
         <!-- INDONESIAN -->
@@ -85,7 +85,7 @@
     <!-- EMOTION -->
     <label class="font-semibold text-gray-700">Select Emotion:</label>
     <select id="emotion"
-            class="w-full p-3 rounded-lg border mt-1 mb-6 border-gray-300">
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
         <option value="">-- Select Emotion --</option>
         <option value="happy">Happy</option>
         <option value="angry">Angry</option>
@@ -94,7 +94,7 @@
     </select>
 
     <!-- CONSENT CHECKBOX + LINK -->
-    <div class="mb-4">
+    <div class="mt-2">
         <label class="inline-flex items-start">
             <input id="consentCheck" type="checkbox" class="mt-1 mr-2">
             <span class="text-gray-700 text-sm">
@@ -108,16 +108,17 @@
 
 
     <!-- BUTTONS -->
-    <div class="flex justify-center space-x-6 mb-6">
+    <div class="flex flex-col sm:flex-row sm:justify-center mt-6 space-y-4 sm:space-y-0 sm:space-x-6">
+
         <button id="startBtn"
                 disabled
-                class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full text-xl shadow-md transition">
+                class="bg-gray-400 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full text-lg sm:text-xl shadow-md transition cursor-not-allowed">
             🔴 Record
         </button>
 
         <button id="stopBtn"
-                class="bg-gray-400 text-white px-6 py-3 rounded-full text-xl shadow-md cursor-not-allowed"
-                disabled>
+                disabled
+                class="bg-gray-400 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-full text-lg sm:text-xl shadow-md cursor-not-allowed">
             ⏹ Stop
         </button>
     </div>
@@ -126,7 +127,7 @@
     <audio id="audio" controls class="w-full mb-4 hidden"></audio>
 
     <!-- STATUS -->
-    <div id="status" class="text-sm text-gray-600 mt-2"></div>
+    <div id="status" class="text-sm text-gray-600 mt-3"></div>
 
 </div>
 
