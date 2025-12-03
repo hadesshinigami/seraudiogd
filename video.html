@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🎥 Emotion Video Recorder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+
+<div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
+
+    <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-indigo-600">
+        🎥 Emotion Video Recorder
+    </h2>
+
+    <!-- GUIDE -->
+    <div class="mb-4">
+      <button id="toggleGuide" class="text-indigo-600 underline font-semibold mb-2">
+          How to use this app?
+      </button>
+    
+      <div id="guideContent" class="hidden text-gray-700 text-sm space-y-2">
+         <p>Each participant must record 10 sentences × 4 emotions × 2 repetitions = 80 video samples.</p>
+         <p>1. Fill in all fields below.</p>
+         <p>2. Read and agree to the consent.</p>
+         <p>3. Select a sentence and emotion.</p>
+         <p>4. Press “Record”, speak clearly toward the camera, then “Stop”.</p>
+      </div>
+    </div>
+
+    <!-- PARTICIPANT ID -->
+    <label class="font-semibold text-gray-700">Participant ID:</label>
+    <input id="participantID" type="text"
+           class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1"
+           placeholder="Enter your participant ID">
+
+    <!-- AGE -->
+    <label class="font-semibold text-gray-700">Age:</label>
+    <input id="age" type="number" min="1"
+           class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1"
+           placeholder="example: 25">
+
+    <!-- GENDER -->
+    <label class="font-semibold text-gray-700">Gender:</label>
+    <select id="gender"
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
+        <option value="">-- Select Gender --</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select>
+
+    <!-- COUNTRY -->
+    <label class="font-semibold text-gray-700">Country:</label>
+    <select id="country"
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
+        <option value="">-- Select Country --</option>
+        <option value="Japan">Japan</option>
+        <option value="Indonesia">Indonesia</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <!-- SENTENCE -->
+    <label class="font-semibold text-gray-700">Sentence to Speak:</label>
+    <select id="sentence"
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
+        <option value="">-- Select Sentence --</option>
+
+        <!-- INDONESIAN -->
+        <option value="Hari ini hari sabtu.">1. Hari ini hari sabtu.</option>
+        <option value="Saya sedang berbelanja.">2. Saya sedang berbelanja.</option>
+        <option value="Saya berada di perpustakaan.">3. Saya berada di perpustakaan.</option>
+        <option value="Di luar sedang turun hujan.">4. Di luar sedang turun hujan.</option>
+        <option value="Saya sedang duduk di dalam ruangan.">5. Saya sedang duduk di dalam ruangan.</option>
+
+        <!-- JAPANESE -->
+        <option value="今日は土曜日です。">1. 今日は土曜日です。</option>
+        <option value="私は買い物をしています。">2. 私は買い物をしています。</option>
+        <option value="私は図書館にいます。">3. 私は図書館にいます。</option>
+        <option value="外は雨が降っています。">4. 外は雨が降っています。</option>
+        <option value="私は部屋に座っています。">5. 私は部屋に座っています。</option>
+    </select>
+
+    <!-- EMOTION -->
+    <label class="font-semibold text-gray-700">Select Emotion:</label>
+    <select id="emotion"
+            class="w-full p-2 sm:p-3 rounded-lg border border-gray-300 mt-1">
+        <option value="">-- Select Emotion --</option>
+        <option value="happy">Happy</option>
+        <option value="angry">Angry</option>
+        <option value="sad">Sad</option>
+        <option value="relaxed">Relaxed</option>
+    </select>
+
+    <!-- CONSENT -->
+    <div class="mt-2">
+        <label class="inline-flex items-start">
+            <input id="consentCheck" type="checkbox" class="mt-1 mr-2">
+            <span class="text-gray-700 text-sm">
+                I agree to participate in this research.
+                <a id="openModalLink" class="text-indigo-600 underline cursor-pointer ml-1">
+                    Read full agreement
+                </a>
+            </span>
+        </label>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="flex flex-col sm:flex-row sm:justify-center mt-6 space-y-4 sm:space-y-0 sm:space-x-6">
+        <button id="startBtn" disabled
+                class="bg-gray-400 text-white px-6 py-3 rounded-full text-xl shadow-md cursor-not-allowed">
+            🔴 Record
+        </button>
+
+        <button id="stopBtn" disabled
+                class="bg-gray-400 text-white px-6 py-3 rounded-full text-xl shadow-md cursor-not-allowed">
+            ⏹ Stop
+        </button>
+    </div>
+
+    <!-- VIDEO PREVIEW -->
+    <video id="videoPreview" controls class="w-full mt-4 rounded-lg shadow hidden"></video>
+
+    <!-- STATUS -->
+    <div id="status" class="text-sm text-gray-600 mt-3"></div>
+
+</div>
+
+<!-- MODAL -->
+<div id="agreementModal"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full">
+        <h2 class="text-xl font-bold mb-3">Participant Consent Agreement</h2>
+
+        <ul class="list-disc ml-5 text-sm text-gray-700 space-y-2">
+            <li>Your video (face + voice), age, gender, country, emotion label, and IP address will be collected.</li>
+            <li>Data is used only for academic purposes.</li>
+            <li>Your identity will not be disclosed.</li>
+            <li>You may stop anytime.</li>
+        </ul>
+
+        <p class="text-sm text-gray-700 mt-4">
+            <span class="font-semibold">Researcher:</span> Amil (PhD Student, Kyutech)
+        </p>
+
+        <div class="text-right mt-6">
+            <button id="closeModalBtn"
+                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// Show guide
+document.getElementById("toggleGuide").onclick = () =>
+    document.getElementById("guideContent").classList.toggle("hidden");
+
+// Consent enable record
+document.getElementById("consentCheck").onchange = (e) => {
+    const startBtn = document.getElementById("startBtn");
+    if (e.target.checked) {
+        startBtn.disabled = false;
+        startBtn.classList.remove("bg-gray-400", "cursor-not-allowed");
+        startBtn.classList.add("bg-red-500", "hover:bg-red-600");
+    } else {
+        startBtn.disabled = true;
+        startBtn.classList.add("bg-gray-400", "cursor-not-allowed");
+        startBtn.classList.remove("bg-red-500", "hover:bg-red-600");
+    }
+};
+
+// Modal control
+document.getElementById("openModalLink").onclick = () =>
+    document.getElementById("agreementModal").classList.remove("hidden");
+
+document.getElementById("closeModalBtn").onclick = () =>
+    document.getElementById("agreementModal").classList.add("hidden");
+
+// Click outside to close modal
+document.getElementById("agreementModal").onclick = (e) => {
+    if (e.target === document.getElementById("agreementModal"))
+        document.getElementById("agreementModal").classList.add("hidden");
+};
+
+// IP
+let clientIP = "unknown";
+fetch("https://api.ipify.org?format=json")
+    .then(res => res.json())
+    .then(d => clientIP = d.ip)
+    .catch(() => clientIP = "unknown");
+
+// Recorder
+let mediaRecorder;
+let chunks = [];
+const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE"; // Ganti dengan URL Apps Script Anda
+
+// Validate fields
+function validateFields() {
+    const ids = ["participantID", "age", "gender", "country", "sentence", "emotion"];
+    for (let id of ids) {
+        if (document.getElementById(id).value.trim() === "") {
+            alert("Please fill in all fields.");
+            return false;
+        }
+    }
+    return true;
+}
+
+// Blob → Base64
+function blobToBase64(blob) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(",")[1]);
+        reader.readAsDataURL(blob);
+    });
+}
+
+// Upload
+async function sendToServer(blob, metadata) {
+    const status = document.getElementById("status");
+    status.textContent = "Uploading video...";
+
+    const base64 = await blobToBase64(blob);
+
+    await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ ...metadata, videoBase64: base64, ip: clientIP })
+    });
+
+    status.textContent = "✅ Upload complete!";
+    alert("Video uploaded successfully!");
+}
+
+// Start recording
+document.getElementById("startBtn").onclick = async () => {
+
+    if (!validateFields()) return;
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+    });
+
+    mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+    chunks = [];
+    mediaRecorder.start();
+
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+
+    mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+
+        const player = document.getElementById("videoPreview");
+        player.src = url;
+        player.classList.remove("hidden");
+
+        const pid = participantID.value.trim();
+        const ageVal = age.value.trim();
+        const genderVal = gender.value.trim();
+        const countryVal = country.value.trim();
+        const emo = emotion.value.trim();
+        const sentenceVal = sentence.value.trim();
+        const time = new Date().toISOString();
+
+        const safeSentence = sentenceVal.replace(/[\/\\:*?"<>|]/g, "").replace(/\s+/g, "-");
+        const safeIP = clientIP.replace(/\./g, "_");
+
+        const filename = `${pid}-${safeIP}-${ageVal}-${genderVal}-${countryVal}-${emo}-${safeSentence}.webm`;
+
+        const metadata = {
+            participant_id: pid,
+            age: ageVal,
+            gender: genderVal,
+            country: countryVal,
+            emotion: emo,
+            sentence: sentenceVal,
+            filename,
+            timestamp: time
+        };
+
+        await sendToServer(blob, metadata);
+    };
+
+    // UI state
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+};
+
+// Stop recording
+document.getElementById("stopBtn").onclick = () => {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+    }
+    stopBtn.disabled = true;
+    startBtn.disabled = false;
+};
+
+</script>
+
+</body>
+</html>
